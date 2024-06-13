@@ -1,32 +1,31 @@
-import mongoose,{Schema, Document} from 'mongoose';
+import mongoose, { Schema, Document } from "mongoose";
 
-export interface Message extends Document{
-    content: string;
-    createdAt: Date;
+export interface Message extends Document {
+  content: string;
+  createdAt: Date;
 }
 
-const MessageSchema:Schema<Message> = new Schema({
-    content: {
-        type: String,
-        required: true
-    },
-    createdAt: {
-        type: Date,
-        required: true,
-        default: Date.now
-    }
-})
-
+const MessageSchema: Schema<Message> = new Schema({
+  content: {
+    type: String,
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    required: true,
+    default: Date.now,
+  },
+});
 
 export interface User extends Document {
   username: string;
   email: string;
   password: string;
   verifyCode: string;
-  verifyCodeExpiry:Date;
+  verifyCodeExpiry: Date;
   isVerified: boolean;
   isAcceptingMessage: boolean;
-  message:Message[]
+  message: Message[];
 }
 
 const UserSchema: Schema<User> = new Schema({
@@ -40,7 +39,10 @@ const UserSchema: Schema<User> = new Schema({
     type: String,
     required: [true, "email is required"],
     unique: true,
-    match: [/\b[w.-]+@[w.-]+.w{2,4}\b/gi, "plz use a valid email address"],
+    match: [
+      /^[a-zA-Z0-9. _%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      "plz use a valid email address",
+    ],
   },
   password: {
     type: String,
@@ -48,13 +50,13 @@ const UserSchema: Schema<User> = new Schema({
   },
   verifyCode: {
     type: String,
-    required: [true, 'verifyCode is required'],
+    required: [true, "verifyCode is required"],
   },
   verifyCodeExpiry: {
     type: Date,
     default: Date.now,
   },
-  isVerified:{
+  isVerified: {
     type: Boolean,
     default: false,
   },
@@ -67,6 +69,8 @@ const UserSchema: Schema<User> = new Schema({
   },
 });
 
-const UserModel = (mongoose.models.User as mongoose.Model<User>) || (mongoose.model<User>('User', UserSchema))
+const UserModel =
+  (mongoose.models.User as mongoose.Model<User>) ||
+  mongoose.model<User>("User", UserSchema);
 
-export {UserModel}
+export { UserModel };

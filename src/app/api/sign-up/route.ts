@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 
 import { sendVerificationEmail } from "@/helpers/sendVerificationEmail";
 
-export async function POST(request: Request, response: Response) {
+export async function POST(request: Request) {
   await dbConnect();
   try {
     // in next-js hum jab bhi request se data leti hai to hum us waqt await lagte hi lagte hai
@@ -15,6 +15,7 @@ export async function POST(request: Request, response: Response) {
       username,
       isVerified: true,
     });
+    console.log(existingUserVerifiedByUsername);
 
     if (existingUserVerifiedByUsername) {
       return Response.json(
@@ -33,6 +34,8 @@ export async function POST(request: Request, response: Response) {
 
     // check the user is already exist or not by email
     const existingUserByEmail = await UserModel.findOne({ email });
+    console.log(existingUserByEmail);
+
     if (existingUserByEmail) {
       // if the user has registered but not verified
       if (!existingUserByEmail.isVerified) {
@@ -51,7 +54,7 @@ export async function POST(request: Request, response: Response) {
       ExpireDate.setHours(ExpireDate.getHours() + 1); // create a expire Date
 
       // create a new user
-      const newUser = await new UserModel({
+      const newUserCreated = new UserModel({
         username,
         email,
         password: hashedPassword,
@@ -60,6 +63,8 @@ export async function POST(request: Request, response: Response) {
         isVerified: false,
         message: [],
       });
+
+      await newUserCreated.save();
     }
 
     // send verification email
@@ -68,6 +73,7 @@ export async function POST(request: Request, response: Response) {
       username,
       verifyCode
     );
+
 
     if (!emailResponse.success) {
       return Response.json(
