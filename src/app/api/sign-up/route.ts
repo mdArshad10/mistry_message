@@ -37,9 +37,11 @@ export async function POST(request: Request) {
     console.log(existingUserByEmail);
 
     if (existingUserByEmail) {
+
       // if the user has registered but not verified
       if (!existingUserByEmail.isVerified) {
         const hashedPassword = await bcrypt.hash(password, 10); // hash the password
+        
         // update the password, verifyCode and verifyCodeExpiry
         existingUserByEmail.password = hashedPassword;
         existingUserByEmail.verifyCode = verifyCode;
